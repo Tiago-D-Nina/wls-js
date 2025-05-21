@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loja Virtual – Paginação Segura</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    header { 
+      background: #333; 
+      color: #fff; 
+      padding: 20px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: start; 
+    }
+    .header-banner { 
+      width: 100%; 
+      height: 200px; 
+      background-image: url('https://grupowls.com.br/images/products/banner-todos.webp'); 
+      background-size: cover; 
+      background-position: center; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      margin-bottom: 20px; 
+    }
+    .header-banner-text { 
+      color: #fff; 
+      font-size: 2em; 
+      font-weight: bold; 
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
+    }
+    .products-container { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); 
+      gap: 20px; 
+      padding: 20px; 
+    }
+    .product-card { 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      padding: 15px; 
+      display: flex; 
+      flex-direction: column; 
+      position: relative; 
+    }
+    .product-card-link { 
+      text-decoration: none; 
+      color: inherit; 
+      display: block; 
+    }
+    .product-card-link:hover .product-card { 
+      background: #f5f5f5; 
+    }
+    .product-image { 
+      width: 100%; 
+      height: 200px; 
+      object-fit: cover; 
+      border-radius: 4px; 
+      margin-bottom: 10px; 
+    }
+    .product-reference { 
+      font-weight: bold; 
+      margin-bottom: 5px; 
+    }
+    .product-group { 
+      font-style: italic; 
+      margin-bottom: 10px; 
+    }
+    .pagination { 
+      text-align: center; 
+      margin: 20px 0; 
+    }
+    .pagination button { 
+      margin: 0 5px; 
+      padding: 8px 16px; 
+      border: none; 
+      background: #e04403; 
+      color: #fff; 
+      border-radius: 4px; 
+      cursor: pointer; 
+    }
+    .pagination button:hover { 
+      background: #c03a02; 
+    }
+    .pagination button:disabled { 
+      background: #ccc; 
+      cursor: default; 
+    }
+    .search-container { 
+      padding: 20px; 
+      text-align: center;
+      display: flex; 
+      justify-content: center;
+    }
+    .search-input { 
+      width: 100%; 
+      max-width: 500px; 
+      padding: 10px; 
+      font-size: 1em; 
+      border: 1px solid #ddd; 
+      border-radius: 4px; 
+    }
+    .search-input:focus { 
+      outline: none; 
+      border-color: #e04403; 
+      box-shadow: 0 0 5px rgba(224, 68, 3, 0.3); 
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <svg width="196" height="69" viewBox="0 0 196 69" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M119.646 50.0979C119.376 50.0979 119.129 50.0486 118.908 49.9624C118.686 49.8761 118.501 49.7282 118.341 49.5064L109.181 37.1452L99.3555 49.5064C99.1954 49.7159 99.023 49.8761 98.8137 49.9624C98.6044 50.0486 98.3951 50.0979 98.1612 50.0979H96.4744C95.9326 50.0979 95.5017 49.9008 95.1692 49.5187L80.0865 31.2542C79.9264 31.0939 79.8525 30.9337 79.8525 30.7612C79.8525 30.4284 80.0618 30.2682 80.4928 30.2682H91.6479C91.9803 30.2682 92.2635 30.3175 92.5097 30.4038C92.756 30.4901 92.9653 30.6379 93.1623 30.8598L101.904 41.8037L110.708 30.8598C110.868 30.6503 111.065 30.4901 111.323 30.4038C111.569 30.3175 111.865 30.2682 112.197 30.2682H114.032C114.364 30.2682 114.648 30.3175 114.906 30.4038C115.152 30.4901 115.362 30.6379 115.522 30.8598L124.239 42.5309L133.362 30.8598C133.535 30.6503 133.744 30.4901 134.003 30.4038C134.249 30.3175 134.544 30.2682 134.877 30.2682H135.923C136.33 30.2682 136.539 30.4284 136.539 30.7365C136.539 30.8968 136.478 31.057 136.367 31.2295L122.528 49.5187C122.367 49.7282 122.183 49.8884 121.973 49.9747C121.764 50.061 121.543 50.1103 121.309 50.1103H119.646V50.0979Z" fill="white"></path>
+      <path d="M146.463 50.0979C145.01 50.0979 143.754 49.8884 142.683 49.4817C141.612 49.075 140.738 48.5081 140.036 47.781C139.334 47.0539 138.817 46.1912 138.472 45.1929C138.127 44.1946 137.955 43.0978 137.955 41.89V31.0077C137.955 30.5024 138.201 30.2559 138.706 30.2559H149.837C150.354 30.2559 150.625 30.5024 150.625 31.0077V42.3953C150.625 43.9112 150.871 44.9957 151.376 45.6735C151.88 46.339 152.767 46.6718 154.047 46.6718H165.473C165.978 46.6718 166.224 46.9306 166.224 47.4606V49.3215C166.224 49.8391 165.978 50.1103 165.473 50.1103H146.463V50.0979Z" fill="white"></path>
+      <path d="M168.232 50.0979C167.727 50.0979 167.481 49.8391 167.481 49.3092V47.4482C167.481 46.9306 167.727 46.6595 168.232 46.6595H184.533L170.842 40.2262C170.103 39.8811 169.5 39.5114 169.044 39.1294C168.576 38.7473 168.219 38.3529 167.948 37.9339C167.69 37.5149 167.518 37.0712 167.431 36.6152C167.345 36.1469 167.296 35.6539 167.296 35.1363C167.296 34.4954 167.407 33.8792 167.641 33.2877C167.875 32.6961 168.232 32.1785 168.7 31.7225C169.18 31.2665 169.771 30.9091 170.473 30.6503C171.174 30.3915 171.999 30.2559 172.923 30.2559H194.309C194.827 30.2559 195.097 30.5024 195.097 31.0077V32.8686C195.097 33.3863 194.839 33.6574 194.309 33.6574H178.562L192.216 40.0906C192.967 40.4357 193.583 40.8055 194.039 41.1875C194.494 41.5696 194.851 41.9639 195.11 42.383C195.368 42.802 195.541 43.2457 195.627 43.7263C195.713 44.2069 195.762 44.6999 195.762 45.2299C195.762 45.8707 195.651 46.4869 195.418 47.0785C195.184 47.6701 194.827 48.2 194.359 48.6437C193.878 49.0997 193.3 49.4571 192.598 49.7159C191.896 49.9747 191.084 50.1103 190.16 50.1103H168.232V50.0979Z" fill="white"></path>
+      <path d="M84.8514 25.1537C84.2604 25.7452 83.5832 26.0287 82.8076 26.0287C82.3274 26.0287 81.8718 25.9301 81.4532 25.7329C81.0346 25.5357 80.6652 25.2769 80.3451 24.9318C80.0373 24.5991 79.7787 24.1924 79.6063 23.7364C79.4216 23.2804 79.3354 22.7874 79.3354 22.2575C79.3354 21.7522 79.4216 21.2838 79.6063 20.8402C79.791 20.3965 80.0373 20.0021 80.3574 19.6694C80.6775 19.3366 81.0592 19.0655 81.4901 18.8683C81.9211 18.6711 82.4012 18.5725 82.9061 18.5725C83.5955 18.5725 84.1865 18.7204 84.679 19.0039C85.1715 19.2873 85.5409 19.6817 85.7872 20.1747L84.7283 20.9634C84.5436 20.5937 84.285 20.3226 83.9526 20.1254C83.6202 19.9282 83.2508 19.8419 82.8568 19.8419C82.549 19.8419 82.2658 19.9035 82.0072 20.0391C81.7487 20.1747 81.5271 20.3472 81.3424 20.5814C81.1577 20.8032 81.0222 21.0743 80.9237 21.3701C80.8252 21.6659 80.776 21.9863 80.776 22.3068C80.776 22.6518 80.8253 22.9723 80.9361 23.2681C81.0469 23.5638 81.1946 23.8226 81.3916 24.0445C81.5886 24.2663 81.8102 24.4389 82.0811 24.5621C82.352 24.6853 82.6352 24.7593 82.943 24.7593C83.6571 24.7593 84.2974 24.4265 84.8637 23.761V23.2434H83.3862V22.1958H86.0457V25.9671H84.8514V25.1537Z" fill="white"></path>
+      <path d="M87.2524 25.9794V18.6341H90.5029C90.8354 18.6341 91.1555 18.7081 91.4387 18.8436C91.7219 18.9792 91.9681 19.1764 92.1774 19.3982C92.3867 19.6324 92.5468 19.8912 92.6576 20.187C92.7807 20.4828 92.83 20.7785 92.83 21.0743C92.83 21.555 92.7069 21.9863 92.4729 22.3684C92.239 22.7504 91.9189 23.0339 91.5125 23.2064L93.187 25.9671H91.5864L90.0843 23.5022H88.6807V25.9671H87.2524V25.9794ZM88.6807 22.2698H90.466C90.6014 22.2698 90.7246 22.2328 90.8354 22.1712C90.9462 22.1096 91.0447 22.0233 91.1309 21.9124C91.2171 21.8015 91.2786 21.6782 91.3279 21.5303C91.3771 21.3824 91.4017 21.2345 91.4017 21.062C91.4017 20.8895 91.3771 20.7292 91.3156 20.5814C91.2663 20.4335 91.1924 20.3102 91.0939 20.1993C90.9954 20.0884 90.8969 20.0144 90.7738 19.9528C90.6507 19.8912 90.5276 19.8665 90.4044 19.8665H88.6807V22.2698Z" fill="white"></path>
+      <path d="M97.2257 24.7716C97.5582 24.7716 97.8414 24.6977 98.0753 24.5621C98.3092 24.4265 98.4939 24.2417 98.6294 24.0198C98.7648 23.798 98.8756 23.5515 98.9249 23.2557C98.9864 22.9723 99.011 22.6765 99.011 22.3684V18.6218H100.427V22.3684C100.427 22.8737 100.365 23.342 100.242 23.7857C100.119 24.2293 99.9345 24.6114 99.6759 24.9441C99.4174 25.2769 99.0849 25.5357 98.6786 25.7329C98.2723 25.9301 97.7921 26.0287 97.2257 26.0287C96.6348 26.0287 96.1423 25.9301 95.7359 25.7206C95.3296 25.5234 94.9972 25.2523 94.7386 24.9195C94.4801 24.5867 94.2954 24.1924 94.1846 23.761C94.0738 23.3173 94.0122 22.8613 94.0122 22.3807V18.6341H95.4404V22.3807C95.4404 22.6888 95.4651 22.9846 95.5266 23.2804C95.5882 23.5638 95.6867 23.8226 95.8221 24.0445C95.9576 24.2663 96.1423 24.4388 96.3762 24.5744C96.6101 24.71 96.8933 24.7716 97.2257 24.7716Z" fill="white"></path>
+      <path d="M101.88 25.9794V18.6341H104.995C105.327 18.6341 105.647 18.7081 105.931 18.8436C106.214 18.9792 106.46 19.1764 106.669 19.3982C106.879 19.6324 107.039 19.8912 107.15 20.187C107.273 20.4828 107.322 20.7785 107.322 21.0743C107.322 21.3824 107.273 21.6905 107.162 21.974C107.051 22.2698 106.891 22.5286 106.694 22.7504C106.497 22.9723 106.251 23.1571 105.968 23.2927C105.684 23.4283 105.377 23.5022 105.032 23.5022H103.296V25.9671H101.88V25.9794ZM103.308 22.2698H104.958C105.217 22.2698 105.438 22.1589 105.611 21.9493C105.783 21.7398 105.869 21.4441 105.869 21.0743C105.869 20.8895 105.844 20.7169 105.783 20.569C105.734 20.4211 105.66 20.2979 105.561 20.187C105.475 20.0884 105.364 20.0021 105.241 19.9528C105.118 19.9035 104.995 19.8789 104.872 19.8789H103.284V22.2698H103.308Z" fill="white"></path>
+      <path d="M111.447 26.0287C110.905 26.0287 110.425 25.9178 109.981 25.7082C109.538 25.4987 109.169 25.2153 108.861 24.8702C108.553 24.5251 108.307 24.1184 108.135 23.6747C107.962 23.2311 107.876 22.7627 107.876 22.2944C107.876 21.8015 107.962 21.3331 108.147 20.8895C108.332 20.4458 108.578 20.0391 108.898 19.694C109.218 19.3489 109.6 19.0778 110.043 18.8683C110.486 18.6588 110.966 18.5602 111.484 18.5602C112.013 18.5602 112.493 18.6711 112.936 18.8806C113.38 19.1024 113.749 19.3859 114.057 19.731C114.365 20.0884 114.611 20.4828 114.783 20.9264C114.956 21.3701 115.042 21.8261 115.042 22.2944C115.042 22.7874 114.956 23.2557 114.771 23.6994C114.586 24.1431 114.34 24.5374 114.032 24.8825C113.712 25.2276 113.33 25.4987 112.899 25.6959C112.444 25.9301 111.964 26.0287 111.447 26.0287ZM109.317 22.3068C109.317 22.6272 109.366 22.9353 109.464 23.2311C109.563 23.5269 109.698 23.7857 109.883 24.0198C110.068 24.2417 110.289 24.4265 110.56 24.5621C110.831 24.6977 111.126 24.7716 111.459 24.7716C111.804 24.7716 112.111 24.6977 112.37 24.5621C112.641 24.4265 112.863 24.2293 113.047 23.9952C113.232 23.761 113.367 23.5022 113.466 23.2064C113.564 22.9106 113.601 22.6149 113.601 22.3068C113.601 21.9863 113.552 21.6782 113.454 21.3824C113.355 21.0867 113.207 20.8278 113.035 20.5937C112.85 20.3718 112.629 20.187 112.358 20.0514C112.087 19.9158 111.791 19.8542 111.459 19.8542C111.114 19.8542 110.806 19.9282 110.535 20.0637C110.265 20.1993 110.043 20.3965 109.858 20.6183C109.674 20.8525 109.538 21.1113 109.452 21.4071C109.366 21.7029 109.317 22.011 109.317 22.3068Z" fill="white"></path>
+      <path d="M10.6814 29.5904L1.10235 47.1401C0.646793 47.9905 0.646793 49.0011 1.11467 49.8515L10.6938 67.1794C11.7649 69.1143 14.5352 69.1143 15.6064 67.1794L25.1855 49.8515C25.6534 49.0134 25.6534 47.9905 25.1978 47.1401L15.6187 29.5904C14.5476 27.6432 11.7403 27.6432 10.6814 29.5904Z" fill="white"></path>
+      <path d="M40.4036 29.5411L30.8245 47.0908C30.369 47.9412 30.369 48.9518 30.8368 49.8022L40.4159 67.1301C41.4871 69.065 44.2574 69.065 45.3286 67.1301L54.9077 49.8022C55.3755 48.9641 55.3755 47.9412 54.92 47.0908L45.3409 29.5411C44.2697 27.5938 41.4748 27.5938 40.4036 29.5411Z" fill="white"></path>
+      <path d="M16.0252 19.9898C15.5696 20.8402 15.5696 21.8507 16.0375 22.7011L22.1076 33.8176C22.6986 34.8898 24.2622 34.8035 24.7178 33.6574L25.8752 30.7858L26.6509 28.9618C27.1557 27.7787 28.8302 27.791 29.3227 28.9742L31.2557 33.682C31.7359 34.8405 33.3365 34.9514 33.9645 33.8546L34.6663 32.6345L40.1207 22.6765C40.5886 21.8384 40.5885 20.8155 40.133 19.9651L30.5293 2.45238C29.4581 0.492823 26.6509 0.492823 25.592 2.45238L16.0252 19.9898Z" fill="white"></path>
+      <path d="M69.5105 18.3876H68.23V49.9624H69.5105V18.3876Z" fill="white"></path>
+    </svg>
+  </header>
+
+  <main>
+    <div class="search-container">
+      <input type="text" id="search-input" class="search-input" placeholder="Pesquisar produtos...">
+    </div>
+    <div class="products-container" id="products-container"></div>
+
+    <div class="pagination">
+      <button id="btn-prev">Anterior</button>
+      <button id="btn-next">Próximo</button>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const PER_PAGE = 20;
+      let allProducts = [];
+      let filteredProducts = [];
+      let currentPage = 1;
+
+      // Elementos
+      const productsEl = document.getElementById('products-container');
+      const prevBtn = document.getElementById('btn-prev');
+      const nextBtn = document.getElementById('btn-next');
+      const searchInput = document.getElementById('search-input');
+
+      // Função para remover acentos
+      function removeAccents(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+
+      // Filtra produtos com base no texto da pesquisa
+      function filterProducts(searchText) {
+        if (!searchText) {
+          filteredProducts = [...allProducts];
+        } else {
+          const lowerSearch = removeAccents(searchText.toLowerCase());
+          filteredProducts = allProducts.filter(product =>
+            Object.values(product).some(value =>
+              value && typeof value === 'string' && removeAccents(value.toLowerCase()).includes(lowerSearch)
+            )
+          );
+        }
+        // Reseta para a primeira página após filtrar
+        currentPage = 1;
+        renderPage();
+      }
+
+      // Renderiza produtos da página atual
+      function renderPage() {
+        const totalProducts = filteredProducts.length;
+        const totalPages = Math.max(1, Math.ceil(totalProducts / PER_PAGE));
+
+        // Garante que currentPage esteja dentro do intervalo válido
+        currentPage = Math.max(1, Math.min(currentPage, totalPages));
+
+        const start = (currentPage - 1) * PER_PAGE;
+        const end = start + PER_PAGE;
+        const slice = filteredProducts.slice(start, end);
+
+        // Monta HTML
+        productsEl.innerHTML = slice.length > 0 ? slice
+          .map(
+            (p) => `
+          <div class="product-card-container">
+            <a href="pages/produto.html?codigo=${p.codigo}" class="product-card-link">
+              <div class="product-card">
+                <img src="${p.imagem}" alt="${p.descricao}" class="product-image">
+                <div class="product-reference">Referência: ${p.referencia}</div>
+                <h3>${p.descricao}</h3>
+                <div class="product-group">${p.grupo_produto}</div>
+              </div>
+            </a>
+          </div>
+        `
+          )
+          .join('') : '<p>Nenhum produto encontrado.</p>';
+
+        // Ajusta estado dos botões
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage >= totalPages || totalProducts === 0;
+
+        // Debugging: log para verificar o estado
+        console.log(
+          `Página atual: ${currentPage}, Total de páginas: ${totalPages}, Total de produtos: ${totalProducts}, Texto da pesquisa: "${searchInput.value}"`
+        );
+      }
+
+      // Evento de pesquisa
+      searchInput.addEventListener('input', (e) => {
+        filterProducts(e.target.value);
+      });
+
+      // Funções de navegação
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPage();
+        }
+      });
+
+      nextBtn.addEventListener('click', () => {
+        const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PER_PAGE));
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderPage();
+        }
+      });
+
+      // Carrega JSONs e inicializa
+      async function init() {
+        try {
+          const [prodRes, fotoRes] = await Promise.all([
+            fetch('/produtos.json'),
+            fetch('/fotos.json'),
+          ]);
+
+          if (!prodRes.ok || !fotoRes.ok) {
+            throw new Error('Erro ao carregar arquivos JSON');
+          }
+
+          const produtos = await prodRes.json();
+          const fotos = await fotoRes.json();
+
+          // Combina produtos com imagem ordem=1
+          allProducts = produtos.map((p) => {
+            const imgObj = fotos.find(
+              (f) => String(f.product_id) === String(p.codigo) && f.ordem === 1
+            );
+            return {
+              ...p,
+              imagem: imgObj
+                ? `https://grupowls.com.br/images/${encodeURIComponent(imgObj.img)}`
+                : 'https://via.placeholder.com/300x200?text=Sem+imagem',
+            };
+          });
+
+          // Inicializa filteredProducts com todos os produtos
+          filteredProducts = [...allProducts];
+
+          // Debugging: log para verificar dados carregados
+          console.log('Total de produtos carregados:', allProducts.length);
+
+          renderPage();
+        } catch (err) {
+          console.error('Erro ao carregar dados:', err);
+          productsEl.innerHTML = '<p>Erro ao carregar produtos. Tente novamente mais tarde.</p>';
+        }
+      }
+
+      // Run
+      init();
+    })();
+  </script>
+
+</body>
+</html>

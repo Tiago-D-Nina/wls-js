@@ -1,0 +1,32 @@
+[
+    {
+        "product_id": "P003",
+        "img": "produto/PeSfBmRB2YVI6yItOLLl1_site (1).png",
+        "ordem": 1
+    },
+    {
+        "product_id": "P003",
+        "img": "produto/OXkHgv531K7jFFf3xAjU012686_VCB_polybag_REV01_curvs_V1.png",
+        "ordem": 2
+    },
+    {
+        "product_id": "P001",
+        "img": "produto/OXkHgv531K7jFFf3xAjU012686_VCB_polybag_REV01_curvs_V1.png",
+        "ordem": 1
+    },
+    {
+        "product_id": "P002",
+        "img": "produto/K2YPc7tzvtNQW99wm2sT1_site (2).png",
+        "ordem": 1
+    },
+    {
+        "product_id": 3,
+        "img": "notebook-ultra.jpg",
+        "ordem": 1
+    },
+    {
+        "product_id": 4,
+        "img": "fone-bluetooth.jpg",
+        "ordem": 1
+    }
+]
