@@ -252,17 +252,29 @@
           const fotos = await fotoRes.json();
 
           // Combina produtos com imagem ordem=1
-          allProducts = produtos.map((p) => {
-            const imgObj = fotos.find(
-              (f) => String(f.product_id) === String(p.codigo) && f.ordem === 1
-            );
-            return {
-              ...p,
-              imagem: imgObj
-                ? `https://grupowls.com.br/images/${encodeURIComponent(imgObj.img)}`
-                : 'https://via.placeholder.com/300x200?text=Sem+imagem',
-            };
-          });
+          // ...código anterior igual...
+
+// Combina produtos com imagem ordem=1 E ORDENA
+allProducts = produtos.map((p) => {
+  const imgObj = fotos.find(
+    (f) => String(f.product_id) === String(p.Código) && f.ordem === 1
+  );
+  return {
+    ...p,
+    imagem: imgObj
+      ? `https://grupowls.com.br/images/${encodeURIComponent(imgObj.img)}`
+      : 'https://via.placeholder.com/300x200?text=Sem+imagem',
+  };
+}).sort((a, b) => {
+  const hasImageA = a.imagem !== 'https://via.placeholder.com/300x200?text=Sem+imagem';
+  const hasImageB = b.imagem !== 'https://via.placeholder.com/300x200?text=Sem+imagem';
+  
+  if (hasImageA && !hasImageB) return -1;
+  if (!hasImageA && hasImageB) return 1;
+  return 0;
+});
+
+// ...restante do código permanece igual...
 
           // Inicializa filteredProducts com todos os produtos
           filteredProducts = [...allProducts];
