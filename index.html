@@ -257,7 +257,7 @@
 // Combina produtos com imagem ordem=1 E ORDENA
 allProducts = produtos.map((p) => {
   const imgObj = fotos.find(
-    (f) => String(f.product_id) === String(p.Código) && f.ordem === 1
+    (f) => String(f.product_id) === String(p.codigo) && f.ordem === 1
   );
   return {
     ...p,
